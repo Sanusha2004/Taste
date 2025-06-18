@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recipe Details</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    main {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      font-family: 'Quicksand', sans-serif;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 15px;
+    }
+    pre {
+      white-space: pre-wrap;
+    }
+    button.like-btn {
+      background: #f2709c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <main id="recipe-container">
+    <p>Loading...</p>
+  </main>
+  <script>
+    const API_URL = 'http://localhost:5000/recipes';
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const container = document.getElementById('recipe-container');
+
+    async function loadRecipe() {
+      try {
+        const res = await fetch(`${API_URL}/${id}`);
+        const recipe = await res.json();
+        container.innerHTML = `
+          <h1>${recipe.title}</h1>
+          <img src="${recipe.imageUrl || 'https://source.unsplash.com/600x400/?food'}" alt="${recipe.title}">
+          <p><strong>Description:</strong> ${recipe.description}</p>
+          <p><strong>Ingredients:</strong></p>
+          <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+          <p><strong>Instructions:</strong></p>
+          <pre>${recipe.instructions}</pre>
+          <p><strong>Prep Time:</strong> ${recipe.prepTime}</p>
+          <p><strong>Cook Time:</strong> ${recipe.cookTime}</p>
+          <p><strong>Servings:</strong> ${recipe.servings}</p>
+          <button class="like-btn">❤️ Like (${recipe.likes})</button>
+          <br><br>
+          <a href="index.html">Back to Home</a>
+        `;
+        container.querySelector('button.like-btn').addEventListener('click', async () => {
+          await likeRecipe(recipe._id);
+        });
+      } catch {
+        container.innerHTML = '<p>Failed to load recipe details.</p>';
+      }
+    }
+
+    async function likeRecipe(id) {
+      try {
+        const res = await fetch(`${API_URL}/${id}/like`, { method: 'POST' });
+        const data = await res.json();
+        const btn = container.querySelector('button.like-btn');
+        btn.textContent = `❤️ Like (${data.likes})`;
+      } catch {
+        alert('Failed to like recipe');
+      }
+    }
+
+    loadRecipe();
+  </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add New Recipe</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    form {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      font-family: 'Quicksand', sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, textarea, select {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      width: 100%;
+      resize: vertical;
+    }
+    button {
+      padding: 15px;
+      background: #f2709c;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <form id="addRecipeForm" enctype="multipart/form-data">
+    <h1>Add New Recipe</h1>
+
+    <label>Title</label>
+    <input name="title" type="text" required />
+
+    <label>Description</label>
+    <textarea name="description" rows="2" required></textarea>
+
+    <label>Ingredients (comma separated)</label>
+    <textarea name="ingredients" rows="3" required></textarea>
+
+    <label>Instructions</label>
+    <textarea name="instructions" rows="5" required></textarea>
+
+    <label>Prep Time</label>
+    <input name="prepTime" type="text" />
+
+    <label>Cook Time</label>
+    <input name="cookTime" type="text" />
+
+    <label>Servings</label>
+    <input name="servings" type="text" />
+
+    <label>Category</label>
+    <input name="category" type="text" />
+
+    <label>Image</label>
+    <input name="image" type="file" accept="image/*" />
+
+    <button type="submit">Add Recipe</button>
+    <a href="index.html">Cancel</a>
+  </form>
+
+  <script>
+    const form = document.getElementById('addRecipeForm');
+    const API_URL = 'http://localhost:5000/recipes';
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: formData,
+        });
+        if (!res.ok) throw new Error('Failed to add recipe');
+        alert('Recipe added successfully!');
+        window.location.href = 'index.html';
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+  </script>
+</body>
+</html>
